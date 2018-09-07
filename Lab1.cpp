@@ -61,19 +61,19 @@ int main(void)
 			ledCnt++;
 			if(ledCnt == 1)
 			{
-				LedReverse(1, 0);
+				LedOn(1, 0);
 			}
 			else
 			{
 				if(ledCnt == 2)
 				{
-					LedReverse(8, 1);
+					LedOn(8, 1);
 				}
 				else
 				{
 					if(ledCnt == 3)
 					{
-						LedReverse(8, 2);
+						LedOn(8, 2);
 					}
 					else
 					{
@@ -89,4 +89,5 @@ int main(void)
 		}
 		delay(1000);
 	}
+
 }
