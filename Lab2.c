@@ -14,7 +14,7 @@
 
 int main(void)
 {
-  WDTCTL = WDT_MDLY_32;                     // WDT 32ms, SMCLK, interval timer 
+  WDTCTL = WDT_MDLY_32;                     // WDT 32ms, SMCLK, interval timer
   SFRIE1 |= WDTIE;                          // Enable WDT interrupt
 
   P1OUT = 0;	//connected to leds
@@ -36,7 +36,10 @@ int main(void)
 }
 
 volatile int curLed = 1;
-volatile const int timer = 25;	// 25*32ms
+volatile const int timer = 12;	// 25*32ms
+
+volatile int tmpIsPressed = 0;
+volatile int tmpCnt = 0;
 
 volatile static int ledTimer[6];
 
@@ -61,14 +64,30 @@ __interrupt void WDT_ISR(void)
 			}
 		}
 	}
+	if(tmpIsPressed == 1)
+	{
+		tmpCnt++;
+	}
+	else
+	{
+		tmpCnt = 0;
+	}
+
+	if(tmpCnt == 4)
+	{
+		LedOn(P1OUT, 0x01 << curLed);
+		ledTimer[curLed] = 0;
+		P1IES ^= BIT7;
+		curLed = curLed % 5 + 1;
+
+		tmpIsPressed = 0;
+	}
 }
 
 #pragma vector=PORT1_VECTOR
 __interrupt void PORT1_ISR(void)
 {
-	LedOn(P1OUT, 0x01 << curLed);
-	ledTimer[curLed] = 0;
-	P1IES ^= BIT7;
-	curLed = curLed % 5 + 1;
+	tmpIsPressed = 1;
+	tmpCnt = 0;
 	P1IFG &= ~BIT7;
 }
